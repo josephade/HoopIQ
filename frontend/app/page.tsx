@@ -1,12 +1,33 @@
-import { pingBackend } from "@/lib/api";
+'use client';
 
-export default async function HomePage() {
-  const data = await pingBackend();
+import { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import IntroAnimation from '@/components/IntroAnimation';
+import MainContent from '@/components/MainContent';
+
+export default function Home() {
+  const [showIntro, setShowIntro] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    const timer1 = setTimeout(() => setShowContent(true), 500);
+    const timer2 = setTimeout(() => setShowIntro(false), 15000); // 15s total duration
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold">HoopIQ</h1>
-      <p>Backend says: {data.message}</p>
-    </main>
+    <div className="relative h-screen w-full bg-black overflow-hidden">
+      <AnimatePresence>
+        {showIntro && (
+          <IntroAnimation showContent={showContent} />
+        )}
+      </AnimatePresence>
+
+      {!showIntro && <MainContent />}
+    </div>
   );
 }
